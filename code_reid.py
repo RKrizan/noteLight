@@ -10,8 +10,8 @@ note_data = []  # Stores (absolute_time, [notes], duration, part_name)
 for part in score.parts:  
     part_name = part.partName if part.partName else "Unknown Part"
     
-    for element in part.flat.notes:  
-        absolute_time = element.offset  # This tracks time from start of piece
+    for element in part.flat.notesAndRests:  # This includes rests!
+        absolute_time = element.offset  # Time from start of piece
 
         if isinstance(element, note.Note):
             note_name = element.nameWithOctave
@@ -23,6 +23,10 @@ for part in score.parts:
             duration = element.quarterLength
             note_data.append((absolute_time, chord_notes, duration, part_name))
 
+        elif isinstance(element, note.Rest):  # Detecting rests
+            duration = element.quarterLength
+            note_data.append((absolute_time, ["Rest"], duration, part_name))
+
 # Sort data by absolute time
 note_data.sort(key=lambda x: x[0])
 
@@ -30,6 +34,7 @@ note_data.sort(key=lambda x: x[0])
 for entry in note_data:
     absolute_time, notes, duration, part_name = entry
     print(f"Time: {absolute_time:.2f} beats | Notes: {notes} | Duration: {duration} beats | Part: {part_name}")
+
 
 def convertNOTE(note):
         
